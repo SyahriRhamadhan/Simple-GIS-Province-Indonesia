@@ -23,6 +23,10 @@
         // Inisialisasi peta
         var map = L.map('map').setView([-2.5489, 118.0149], 5);
 
+        function getRandomColor() {
+            return '#' + Math.floor(Math.random() * 16777215).toString(16);
+        }
+
         // Layer OSM
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
@@ -33,15 +37,27 @@
             .then(response => response.json())
             .then(data => {
                 data.forEach(provinsi => {
-                    // Parse geometry yang tersimpan dalam bentuk JSON
-                    L.geoJSON(JSON.parse(provinsi.geojson), {
+                    let featureData = JSON.parse(provinsi.geojson);
+                    let color = getRandomColor();
+                    L.geoJSON(featureData, {
                         style: {
-                            color: "blue",
+                            color: color,
                             weight: 2
+                        },
+                        onEachFeature: function(feature, layer) {
+                            // Ambil semua property yang diinginkan dari feature.properties
+                            let props = feature.properties;
+                            let popupContent = `
+            <b>Nama:</b> ${props.NAME_1 ?? 'N/A'}<br>
+            <b>Kode:</b> ${props.kode ?? 'N/A'}<br>
+            <b>Propinsi:</b> ${props.Propinsi ?? 'N/A'}<br>
+            <b>Sumber:</b> ${props.SUMBER ?? 'N/A'}`;
+                            layer.bindPopup(popupContent);
                         }
-                    }).bindPopup(provinsi.nama).addTo(map);
+                    }).addTo(map);
                 });
-            });
+            })
+            .catch(error => console.error("Error:", error));
     </script>
 </body>
 

@@ -26,9 +26,10 @@ class ProvinsiSeeder extends Seeder
 
         foreach ($geojson['features'] as $feature) {
             DB::table('provinsis')->insert([
-                'nama' => $feature['properties']['NAME_1'] ?? 'Unknown',
-                'geojson' => json_encode($feature['geometry']),
+                'nama'    => $feature['properties']['NAME_1'] ?? 'Unknown',
+                // Simpan seluruh feature (termasuk properties dan geometry)
+                'geojson' => json_encode($feature)
             ]);
-        }
+        }        
     }
 }
