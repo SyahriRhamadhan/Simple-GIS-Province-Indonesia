@@ -257,11 +257,16 @@
                 .then(result => {
                     console.log('Response untuk ID ' + id, result);
                     if (result.success) {
-                        // Gunakan properti data dari respons
                         const prov = result.data;
                         document.getElementById('provinsiId').value = prov.id;
                         document.getElementById('nama').value = prov.nama;
-                        document.getElementById('geojson').value = prov.geojson;
+                        // Jika geojson tersimpan sebagai string, kita dapat memformatnya agar mudah dibaca
+                        try {
+                            const parsedGeojson = JSON.parse(prov.geojson);
+                            document.getElementById('geojson').value = JSON.stringify(parsedGeojson, null, 2);
+                        } catch (e) {
+                            document.getElementById('geojson').value = prov.geojson;
+                        }
                         document.getElementById('formTitle').textContent = "Edit Provinsi (ID: " + prov.id + ")";
                         document.getElementById('cancelBtn').style.display = "inline-block";
                     } else {
@@ -270,6 +275,7 @@
                 })
                 .catch(error => console.error("Error fetching provinsi data:", error));
         }
+
 
         // Fungsi untuk menghapus data provinsi
         function deleteProvinsi(id) {
